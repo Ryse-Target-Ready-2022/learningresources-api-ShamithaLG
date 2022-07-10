@@ -3,14 +3,13 @@ package com.tgt.rysetii.learningresourcesapi.service;
 import com.tgt.rysetii.learningresourcesapi.entity.LearningResource;
 import com.tgt.rysetii.learningresourcesapi.entity.LearningResourceStatus;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class LearningResourceService {
 
@@ -56,5 +55,70 @@ public class LearningResourceService {
         return lR;
     }
 
+
+
+    //next
+    //save data to .csv file
+    public void saveLearningResources(List<LearningResource> learningResources){
+        populateLearningResourcesToCsv(learningResources);
+    }
+
+    private void populateLearningResourcesToCsv(List<LearningResource> learningResources){
+        final String csvDelimiter = ",";
+
+        try {
+            File learningResourcesFile = new File("LearningResources.csv");
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(learningResourcesFile.getName(), true));
+            for (LearningResource learningResource : learningResources) {
+                bufferedWriter.newLine();
+                StringBuffer l = new StringBuffer();
+                l.append(learningResource.getId());
+                l.append(csvDelimiter);
+                l.append(learningResource.getProductName());
+                l.append(csvDelimiter);
+                l.append(learningResource.getCostPrice());
+                l.append(csvDelimiter);
+                l.append(learningResource.getSellingPrice());
+                l.append(csvDelimiter);
+                l.append(learningResource.getProductStatus());
+                l.append(csvDelimiter);
+                l.append(learningResource.getCreatedDate());
+                l.append(csvDelimiter);
+                l.append(learningResource.getPublishedDate());
+                l.append(csvDelimiter);
+                l.append(learningResource.getRetiredDate());
+                bufferedWriter.write(l.toString());
+            }
+            bufferedWriter.flush();
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // calculate profit margin
+    public List<Double> getProfitMargin(){
+        List<LearningResource> learningResources = getLearningResources();
+
+        List<Double> profitMargins = learningResources.stream().map(l -> ((l.getSellingPrice() - l.getCostPrice())/l.getSellingPrice()))
+                .collect(toList());
+
+        return profitMargins;
+    }
+
+    //sort the learning resources based on profit margin
+    public List<LearningResource> sortLearningResources(){
+        List<LearningResource> learningResources = getLearningResources();
+
+        learningResources.sort((l1, l2) -> {
+            Double profit1 = (l1.getSellingPrice() - l1.getCostPrice())/l1.getSellingPrice();
+            Double profit2 = (l2.getSellingPrice() - l2.getCostPrice())/l2.getSellingPrice();
+
+            return profit2.compareTo(profit1) ;
+        });
+
+        return learningResources;
+    }
 
 }
