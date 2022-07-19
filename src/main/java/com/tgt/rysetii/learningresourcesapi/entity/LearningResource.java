@@ -35,6 +35,9 @@ public class LearningResource {
         this.retiredDate = retiredDate;
     }
 
+    public LearningResource() {
+    }
+
     public void setId(int id) {
         this.id = id;
     }
