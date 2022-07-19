@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class LearningResourceService {
     @Autowired
-    LearningResourceRepository lr;
+    private LearningResourceRepository lr;
 
 
     public LearningResourceService(LearningResourceRepository lr){
@@ -58,4 +58,7 @@ public class LearningResourceService {
         return learningResources;
     }
 
+    public void deleteLearningResourceById(int learningResourceId) {
+        lr.deleteById(learningResourceId);
+    }
 }
